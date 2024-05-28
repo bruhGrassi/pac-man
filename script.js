@@ -53,3 +53,24 @@ function gameLoop() {
 }
 
 gameLoop();
+
+document.addEventListener("keydown", (e) => {
+  switch (e.key) {
+    case "ArrowUp":
+      pacman.dx = 0;
+      pacman.dy = -1;
+      break;
+    case "ArrowDown":
+      pacman.dx = 0;
+      pacman.dy = 1;
+      break;
+    case "ArrowLeft":
+      pacman.dx = -1;
+      pacman.dy = 0;
+      break;
+    case "ArrowRight":
+      pacman.dx = 1;
+      pacman.dy = 0;
+      break;
+  }
+});
