@@ -6,13 +6,25 @@ const width = canvas.width / tileSize;
 const height = canvas.height / tileSize;
 
 const pacman = {
-  x: 10,
-  y: 10,
+  x: 1,
+  y: 1,
   dx: 1,
   dy: 0,
   size: tileSize,
-  speed: 2,
+  speed: 1,
 };
+
+const maze = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
+  [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+  [1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+  [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+  [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
 
 function drawPacman() {
   ctx.fillStyle = "yellow";
@@ -32,23 +44,61 @@ function drawPacman() {
 }
 
 function updatePacman() {
-  pacman.x += pacman.dx * pacman.speed;
-  pacman.y += pacman.dy * pacman.speed;
-
-  if (pacman.x < 0) pacman.x = 0;
-  if (pacman.x >= width) pacman.x = width - 1;
-  if (pacman.y < 0) pacman.y = 0;
-  if (pacman.y >= height) pacman.y = height - 1;
+  // Removi esta função porque a movimentação está sendo tratada em checkCollisions
 }
 
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+function drawMaze() {
+  for (let row = 0; row < maze.length; row++) {
+    for (let col = 0; col < maze[row].length; col++) {
+      if (maze[row][col] === 1) {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+      } else if (maze[row][col] === 2) {
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(
+          col * tileSize + tileSize / 2,
+          row * tileSize + tileSize / 2,
+          tileSize / 4,
+          0,
+          2 * Math.PI
+        );
+        ctx.fill();
+      }
+    }
+  }
+}
+
+function checkCollisions() {
+  const nextX = pacman.x + pacman.dx;
+  const nextY = pacman.y + pacman.dy;
+
+  if (maze[Math.floor(nextY)][Math.floor(nextX)] === 1) {
+    pacman.dx = 0;
+    pacman.dy = 0;
+  } else {
+    pacman.x = nextX;
+    pacman.y = nextY;
+  }
+}
+
+function checkFood() {
+  if (maze[Math.floor(pacman.y)][Math.floor(pacman.x)] === 2) {
+    maze[Math.floor(pacman.y)][Math.floor(pacman.x)] = 0;
+    // Aumentar a pontuação, adicionar som, etc.
+  }
+}
+
 function gameLoop() {
   clearCanvas();
-  updatePacman();
+  drawMaze();
   drawPacman();
+  checkFood();
+  checkCollisions();
   requestAnimationFrame(gameLoop);
 }
 
